@@ -1,0 +1,7 @@
+<localEntry key="HTTPConnection" xmlns="http://ws.apache.org/ns/synapse">
+    <http.init>
+        <connectionType>https</connectionType>
+        <baseUrl>https://dummyjson.com</baseUrl>
+        <name>HTTPConnection</name>
+    </http.init>
+</localEntry>

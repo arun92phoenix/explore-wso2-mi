@@ -1,0 +1,11 @@
+<localEntry key="GoogleSheetsConnection" xmlns="http://ws.apache.org/ns/synapse">
+    <googlespreadsheet.init>
+        <connectionType>GOOGLESPREADSHEET</connectionType>
+        <apiUrl>https://sheets.googleapis.com/v4/spreadsheets</apiUrl>
+        <clientId>your-client-id</clientId>
+        <clientSecret>your-client-secret</clientSecret>
+        <refreshToken>your-refresh-token</refreshToken>
+        <tokenEndpoint>https://oauth2.googleapis.com/token</tokenEndpoint>
+        <connectionName>GoogleSheetsConnection</connectionName>
+    </googlespreadsheet.init>
+</localEntry>

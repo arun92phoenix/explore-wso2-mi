@@ -1,0 +1,17 @@
+<api xmlns="http://ws.apache.org/ns/synapse" name="CartsAPI" context="/carts">
+    <resource methods="GET" uri-template="">
+        <inSequence>
+            <http.get configKey="HTTPConnection">
+                <relativePath>/carts</relativePath>
+                <headers>[]</headers>
+                <forceScAccepted>false</forceScAccepted>
+                <disableChunking>false</disableChunking>
+                <forceHttp10>false</forceHttp10>
+                <noKeepAlive>false</noKeepAlive>
+                <forcePostPutNobody>false</forcePostPutNobody>
+                <forceHttpContentLength>false</forceHttpContentLength>
+            </http.get>
+            <respond/>
+        </inSequence>
+    </resource>
+</api>

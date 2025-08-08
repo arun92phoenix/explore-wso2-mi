@@ -1,0 +1,72 @@
+<api xmlns="http://ws.apache.org/ns/synapse" name="CartsAPI" context="/carts">
+    <resource methods="GET" uri-template="">
+        <inSequence>
+            <http.get configKey="HTTPConnection">
+                <relativePath>/carts</relativePath>
+                <headers>[]</headers>
+                <forceScAccepted>false</forceScAccepted>
+                <disableChunking>false</disableChunking>
+                <forceHttp10>false</forceHttp10>
+                <noKeepAlive>false</noKeepAlive>
+                <forcePostPutNobody>false</forcePostPutNobody>
+                <forceHttpContentLength>false</forceHttpContentLength>
+            </http.get>
+            <respond/>
+        </inSequence>
+    </resource>
+    
+    <resource methods="POST" uri-template="/export">
+        <inSequence>
+            <variable name="spreadsheetTitle" expression="${payload.title}" type="STRING"/>
+            <variable name="exportData" expression="${payload.data}" type="JSON"/>
+            
+            <!-- Create new Google Sheets spreadsheet -->
+            <googlespreadsheet.createNewSheet configKey="GoogleSheetsConnection">
+                <title>${vars.spreadsheetTitle}</title>
+                <responseVariable>createResponse</responseVariable>
+                <overwriteBody>false</overwriteBody>
+            </googlespreadsheet.createNewSheet>
+            
+            <variable name="spreadsheetId" expression="${vars.createResponse.spreadsheetId}" type="STRING"/>
+            
+            <!-- Add cart data to the spreadsheet -->
+            <googlespreadsheet.addRowsAndColumns configKey="GoogleSheetsConnection">
+                <spreadsheetId>${vars.spreadsheetId}</spreadsheetId>
+                <range>Sheet1!A:Z</range>
+                <values>${vars.exportData}</values>
+                <valueInputOption>USER_ENTERED</valueInputOption>
+                <insertDataOption>INSERT_ROWS</insertDataOption>
+                <majorDimension>ROWS</majorDimension>
+                <responseVariable>exportResult</responseVariable>
+                <overwriteBody>false</overwriteBody>
+            </googlespreadsheet.addRowsAndColumns>
+            
+            <!-- Return success response -->
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "status": "success",
+                        "message": "Cart data exported to Google Sheets successfully",
+                        "spreadsheetId": "${vars.spreadsheetId}",
+                        "spreadsheetUrl": "https://docs.google.com/spreadsheets/d/${vars.spreadsheetId}",
+                        "rowsUpdated": "${vars.exportResult.updatedRows}"
+                    }
+                </format>
+            </payloadFactory>
+            
+            <respond/>
+        </inSequence>
+        <faultSequence>
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "status": "error",
+                        "message": "Failed to export cart data to Google Sheets",
+                        "error": "${props.synapse.ERROR_MESSAGE}"
+                    }
+                </format>
+            </payloadFactory>
+            <respond/>
+        </faultSequence>
+    </resource>
+</api>
